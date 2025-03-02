@@ -6,7 +6,7 @@ build-backend = "maturin"
 name = "py_evalexpr"
 requires-python = ">=3.11"
 authors = [
-    {name = "Benjamin Kiiskila", email = "b.kiiskila@example.com"},
+    {name = "Benjamin Kiiskila", email = "benjaminckiiskila@gmail.com"},
 ]
 description = "Python bindings for evalexpr Rust crate for safe expression evaluation"
 readme = "README.MD"
