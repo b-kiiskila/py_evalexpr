@@ -15,7 +15,7 @@ License: MIT
 Repository: https://github.com/b-kiiskila/py_evalexpr
 """
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 from . import natives
 
