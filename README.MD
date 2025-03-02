@@ -1,5 +1,9 @@
 # py_evalexpr
 
+[![PyPI version](https://img.shields.io/pypi/v/py-evalexpr.svg)](https://pypi.org/project/py-evalexpr/)
+[![CI](https://github.com/b-kiiskila/py_evalexpr/actions/workflows/maturin-ci.yml/badge.svg)](https://github.com/b-kiiskila/py_evalexpr/actions/workflows/maturin-ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A Python extension module written in Rust that provides bindings to the [`evalexpr`](https://crates.io/crates/evalexpr) crate for expression evaluation.
 
 ## 🌟 Features
@@ -27,7 +31,7 @@ A Python extension module written in Rust that provides bindings to the [`evalex
 ## 📦 Installation
 
 ```bash
-pip install py_evalexpr
+pip install py-evalexpr
 ```
 
 ## 💡 Usage Examples
