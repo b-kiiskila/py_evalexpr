@@ -1,0 +1,31 @@
+[build-system]
+requires = ["maturin>=1.8,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "py_evalexpr"
+requires-python = ">=3.11"
+authors = [
+    {name = "Benjamin Kiiskila", email = "b.kiiskila@example.com"},
+]
+description = "Python bindings for evalexpr Rust crate for safe expression evaluation"
+readme = "README.MD"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "python"
+module-name = "py_evalexpr.natives"
+
+[dependency-groups]
+dev = [
+    "maturin>=1.8.2",
+    "pytest>=8.3.4",
+    "ruff>=0.9.7",
+]

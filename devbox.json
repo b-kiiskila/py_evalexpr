@@ -1,0 +1,44 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
+  "packages": [
+    "rustup@latest",
+    "libiconv@latest",
+    "uv@latest"
+  ],
+  "env": {
+    "PROJECT_DIR": "$PWD"
+  },
+  "shell": {
+    "init_hook": [
+      ". conf/set-env.sh",
+      "rustup default stable",
+      "cargo fetch",
+      "uv venv",
+      ". .venv/bin/activate",
+      "uv sync"
+    ],
+    "scripts": {
+      "rust-venv":   "rustup default stable",
+      "rust-test":   "cargo test --",
+      "rust-format": "cargo fmt --",
+      "rust-lint":   "cargo clippy",
+      "py-test":     "maturin develop && uv run pytest",
+      "py-build":    "maturin build",
+      "py-install":  "maturin develop",
+      "py-format":   "ruff format",
+      "py-lint":     "ruff check --fix",
+      "rust-ci": [
+        "rustup default stable",
+        "cargo test -- --show-output",
+        "cargo fmt -- --check",
+        "cargo clippy"
+      ],
+      "py-ci": [
+        "maturin develop",
+        "pytest",
+        "ruff format --check",
+        "ruff check"
+      ]
+    }
+  }
+}
