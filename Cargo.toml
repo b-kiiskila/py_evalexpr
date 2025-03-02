@@ -1,8 +1,8 @@
 [package]
 name = "py_evalexpr"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
-authors = ["Benjamin Kiiskila <b.kiiskila@example.com>"]
+authors = ["Benjamin Kiiskila <benjaminckiiskila@gmail.com>"]
 description = "Python bindings for evalexpr Rust crate for safe expression evaluation"
 license = "MIT"
 repository = "https://github.com/b-kiiskila/py_evalexpr"
