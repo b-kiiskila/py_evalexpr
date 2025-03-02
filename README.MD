@@ -165,4 +165,4 @@ Contributions are welcome! Please feel free to submit a Pull Request. It's advis
 - [maturin](https://maturin.rs) - The Python packaging tool used to build this project
 
 ---
-Made by [Benjamin Kiiskila](https://github.com/b-kiiskila)
+Made in 🇨🇦🍁 by [Benjamin Kiiskila](https://github.com/b-kiiskila)
