@@ -30,7 +30,6 @@ pub mod evaluate_with_context {
 
     #[pyfunction]
     fn evaluate_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<PyObject> {
-
         let result: EvalexprResult<Value> = eval_with_context(expression, context.deref());
 
         Python::with_gil(|py| match result {
@@ -41,7 +40,6 @@ pub mod evaluate_with_context {
 
     #[pyfunction]
     fn evaluate_string_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<String> {
-
         let result: EvalexprResult<String> = eval_string_with_context(expression, context.deref());
 
         match result {
@@ -52,7 +50,6 @@ pub mod evaluate_with_context {
 
     #[pyfunction]
     fn evaluate_int_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<i64> {
-
         let result: EvalexprResult<i64> = eval_int_with_context(expression, context.deref());
 
         match result {
@@ -63,7 +60,6 @@ pub mod evaluate_with_context {
 
     #[pyfunction]
     fn evaluate_float_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<f64> {
-
         let result: EvalexprResult<f64> = eval_float_with_context(expression, context.deref());
 
         match result {
@@ -74,7 +70,6 @@ pub mod evaluate_with_context {
 
     #[pyfunction]
     fn evaluate_number_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<f64> {
-
         let result: EvalexprResult<f64> = eval_number_with_context(expression, context.deref());
 
         match result {
@@ -85,7 +80,6 @@ pub mod evaluate_with_context {
 
     #[pyfunction]
     fn evaluate_boolean_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<bool> {
-
         let result: EvalexprResult<bool> = eval_boolean_with_context(expression, context.deref());
 
         match result {
@@ -106,7 +100,6 @@ pub mod evaluate_with_context {
 
     #[pyfunction]
     fn evaluate_empty_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<()> {
-
         let result: EvalexprResult<()> = eval_empty_with_context(expression, context.deref());
 
         match result {
