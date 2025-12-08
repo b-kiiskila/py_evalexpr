@@ -5,7 +5,7 @@ use evalexpr::{
 };
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
-use pyo3::{pyfunction, pymodule, Bound, PyObject, PyResult, Python};
+use pyo3::{pyfunction, pymodule, Bound, Py, PyAny, PyResult, Python};
 use std::ops::Deref;
 
 #[pymodule]
@@ -15,7 +15,7 @@ pub mod evaluate_with_context {
 
     #[pymodule_init]
     fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             let mod_name = "py_evalexpr.natives.evaluate_with_context";
             py.import("sys")?.getattr("modules")?.set_item(mod_name, m)?;
             // There's a bug with pyo3 that makes the __module__ attribute of functions on submodules incorrect, so we have to iterate over the functions and set the __module__ attribute manually.
@@ -29,10 +29,10 @@ pub mod evaluate_with_context {
     }
 
     #[pyfunction]
-    fn evaluate_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<PyObject> {
+    fn evaluate_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<Py<PyAny>> {
         let result: EvalexprResult<Value> = eval_with_context(expression, context.deref());
 
-        Python::with_gil(|py| match result {
+        Python::attach(|py| match result {
             Ok(value) => Ok(crate::remap::convert_to_eval_result(py, value)?),
             Err(e) => Err(convert_evalexpr_error(&e)),
         })
@@ -89,10 +89,10 @@ pub mod evaluate_with_context {
     }
 
     #[pyfunction]
-    fn evaluate_tuple_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<PyObject> {
+    fn evaluate_tuple_with_context(expression: &str, context: &crate::context::context::EvalContext) -> PyResult<Py<PyAny>> {
         let result: EvalexprResult<TupleType> = eval_tuple_with_context(expression, context.deref());
 
-        Python::with_gil(|py| match result {
+        Python::attach(|py| match result {
             Ok(value) => Ok(convert_to_py_tuple(py, value)),
             Err(e) => Err(convert_evalexpr_error(&e)),
         })?

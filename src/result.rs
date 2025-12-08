@@ -2,7 +2,7 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::{PyAnyMethods, PyModule};
 use pyo3::types::PyType;
 use pyo3::Bound;
-use pyo3::{pyclass, pymethods, pymodule, Py, PyObject, PyRef, PyResult, Python};
+use pyo3::{pyclass, pymethods, pymodule, Py, PyRef, PyResult, Python};
 
 #[pymodule]
 pub mod result {
@@ -12,7 +12,7 @@ pub mod result {
 
     #[pymodule_init]
     fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             let mod_name = "py_evalexpr.natives.result";
             py.import("sys")?.getattr("modules")?.set_item(mod_name, m)?;
             // There's a bug with pyo3 that makes the __module__ attribute of functions on submodules incorrect, so we have to iterate over the functions and set the __module__ attribute manually.
@@ -36,7 +36,7 @@ pub mod result {
     #[pymethods]
     impl ExprEvalResult {
         #[new]
-        fn new(value: PyObject, _type: Py<PyType>) -> Self {
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> Self {
             ExprEvalResult { value, _type }
         }
 
@@ -56,7 +56,7 @@ pub mod result {
             Err(PyValueError::new_err("Value is not a string"))
         }
 
-        fn as_tuple(&self, _py: Python) -> PyResult<Vec<PyObject>> {
+        fn as_tuple(&self, _py: Python) -> PyResult<Vec<Py<PyAny>>> {
             Err(PyValueError::new_err("Value is not a tuple"))
         }
 
@@ -75,7 +75,7 @@ pub mod result {
     #[pymethods]
     impl ExprEvalIntResult {
         #[new]
-        fn new(value: PyObject, _type: Py<PyType>) -> (Self, ExprEvalResult) {
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
             (ExprEvalIntResult {}, ExprEvalResult::new(value, _type))
         }
 
@@ -94,7 +94,7 @@ pub mod result {
     #[pymethods]
     impl ExprEvalFloatResult {
         #[new]
-        fn new(value: PyObject, _type: Py<PyType>) -> (Self, ExprEvalResult) {
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
             (ExprEvalFloatResult {}, ExprEvalResult::new(value, _type))
         }
 
@@ -113,7 +113,7 @@ pub mod result {
     #[pymethods]
     impl ExprEvalBoolResult {
         #[new]
-        fn new(value: PyObject, _type: Py<PyType>) -> (Self, ExprEvalResult) {
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
             (ExprEvalBoolResult {}, ExprEvalResult::new(value, _type))
         }
 
@@ -132,7 +132,7 @@ pub mod result {
     #[pymethods]
     impl ExprEvalStringResult {
         #[new]
-        fn new(value: PyObject, _type: Py<PyType>) -> (Self, ExprEvalResult) {
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
             (ExprEvalStringResult {}, ExprEvalResult::new(value, _type))
         }
 
@@ -151,7 +151,7 @@ pub mod result {
     #[pymethods]
     impl ExprEvalTupleResult {
         #[new]
-        fn new(value: PyObject, _type: Py<PyType>) -> (Self, ExprEvalResult) {
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
             (ExprEvalTupleResult {}, ExprEvalResult::new(value, _type))
         }
 
@@ -170,7 +170,7 @@ pub mod result {
     #[pymethods]
     impl ExprEvalNoneResult {
         #[new]
-        fn new(value: PyObject, _type: Py<PyType>) -> (Self, ExprEvalResult) {
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
             (ExprEvalNoneResult {}, ExprEvalResult::new(value, _type))
         }
 

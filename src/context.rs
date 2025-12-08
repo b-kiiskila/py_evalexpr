@@ -9,7 +9,7 @@ fn wrap_py_fn_as_native_fn(py_fn: Py<PyAny>) -> Function<DefaultNumericTypes> {
     let py_fn = Arc::new(py_fn);
     Function::new(Box::new(move |args: &Value<DefaultNumericTypes>| {
         let py_fn = Arc::clone(&py_fn);
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             // Handle tuple arguments
             let py_args = match args {
                 Value::Tuple(tuple_args) => {
@@ -41,7 +41,7 @@ pub mod context {
 
     #[pymodule_init]
     fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             let mod_name = "py_evalexpr.natives.context";
             py.import("sys")?.getattr("modules")?.set_item(mod_name, m)?;
             // There's a bug with pyo3 that makes the __module__ attribute of functions on submodules incorrect, so we have to iterate over the functions and set the __module__ attribute manually.
