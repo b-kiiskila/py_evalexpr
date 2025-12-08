@@ -3,7 +3,7 @@ use crate::remap::convert_to_eval_result;
 use evalexpr::{eval, eval_boolean, eval_empty, eval_float, eval_int, eval_number, eval_string, eval_tuple, EvalexprResult, TupleType, Value};
 use pyo3::prelude::{PyAnyMethods, PyModule};
 use pyo3::Bound;
-use pyo3::{pyfunction, pymodule, PyObject, PyResult, Python};
+use pyo3::{pyfunction, pymodule, Py, PyAny, PyResult, Python};
 
 #[pymodule]
 pub mod evaluate {
@@ -12,7 +12,7 @@ pub mod evaluate {
 
     #[pymodule_init]
     fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             let mod_name = "py_evalexpr.natives.evaluate";
             py.import("sys")?.getattr("modules")?.set_item(mod_name, m)?;
             // There's a bug with pyo3 that makes the __module__ attribute of functions on submodules incorrect, so we have to iterate over the functions and set the __module__ attribute manually.
@@ -26,10 +26,10 @@ pub mod evaluate {
     }
 
     #[pyfunction]
-    pub fn evaluate(expression: &str) -> PyResult<PyObject> {
+    pub fn evaluate(expression: &str) -> PyResult<Py<PyAny>> {
         let result: EvalexprResult<Value> = eval(expression);
 
-        Python::with_gil(|py| match result {
+        Python::attach(|py| match result {
             Ok(value) => {
                 // Determine the value type and create the appropriate subclass.
                 Ok(convert_to_eval_result(py, value)?)
@@ -89,10 +89,10 @@ pub mod evaluate {
     }
 
     #[pyfunction]
-    pub fn evaluate_tuple(expression: &str) -> PyResult<PyObject> {
+    pub fn evaluate_tuple(expression: &str) -> PyResult<Py<PyAny>> {
         let result: EvalexprResult<TupleType> = eval_tuple(expression);
 
-        Python::with_gil(|py| match result {
+        Python::attach(|py| match result {
             Ok(value) => Ok(convert_to_py_tuple(py, value)),
             Err(e) => Err(convert_evalexpr_error(&e)),
         })?

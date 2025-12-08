@@ -4,38 +4,38 @@ use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyFloat, PyInt, PyNone, PyString, PyTuple, PyType};
 
 #[inline]
-pub(crate) fn convert_to_py_int(py: Python, value: i64) -> PyResult<PyObject> {
+pub(crate) fn convert_to_py_int(py: Python, value: i64) -> PyResult<Py<PyAny>> {
     Ok(value.into_pyobject(py)?.to_owned().into())
 }
 
 #[inline]
-pub(crate) fn convert_to_py_float(py: Python, value: f64) -> PyResult<PyObject> {
+pub(crate) fn convert_to_py_float(py: Python, value: f64) -> PyResult<Py<PyAny>> {
     Ok(value.into_pyobject(py)?.to_owned().into())
 }
 
 #[inline]
-pub(crate) fn convert_to_py_bool(py: Python, value: bool) -> PyResult<PyObject> {
+pub(crate) fn convert_to_py_bool(py: Python, value: bool) -> PyResult<Py<PyAny>> {
     Ok(value.into_pyobject(py)?.to_owned().into())
 }
 
 #[inline]
-pub(crate) fn convert_to_py_string(py: Python, value: String) -> PyResult<PyObject> {
+pub(crate) fn convert_to_py_string(py: Python, value: String) -> PyResult<Py<PyAny>> {
     Ok(value.into_pyobject(py)?.to_owned().into())
 }
 
 #[inline]
-pub(crate) fn convert_to_py_tuple(py: Python, value: TupleType) -> PyResult<PyObject> {
-    let py_list: Vec<PyObject> = value.into_iter().map(|v| convert_native_to_py(py, v).unwrap_or_else(|_| py.None())).collect();
+pub(crate) fn convert_to_py_tuple(py: Python, value: TupleType) -> PyResult<Py<PyAny>> {
+    let py_list: Vec<Py<PyAny>> = value.into_iter().map(|v| convert_native_to_py(py, v.clone()).unwrap_or_else(|_| py.None())).collect();
     Ok(PyTuple::new(py, py_list)?.to_owned().into())
 }
 
 #[inline]
-pub(crate) fn convert_to_py_none(py: Python) -> PyResult<PyObject> {
+pub(crate) fn convert_to_py_none(py: Python) -> PyResult<Py<PyAny>> {
     Ok(py.None())
 }
 
 #[inline]
-pub(crate) fn convert_native_to_py(py: Python, value: Value) -> PyResult<PyObject> {
+pub(crate) fn convert_native_to_py(py: Python, value: Value) -> PyResult<Py<PyAny>> {
     match value {
         Value::Int(val) => convert_to_py_int(py, val),
         Value::Float(val) => convert_to_py_float(py, val),
@@ -138,7 +138,7 @@ pub(crate) fn convert_to_eval_none_result(py: Python) -> PyResult<Py<ExprEvalNon
 }
 
 #[inline]
-pub(crate) fn convert_to_eval_result(py: Python, value: Value) -> PyResult<PyObject> {
+pub(crate) fn convert_to_eval_result(py: Python, value: Value) -> PyResult<Py<PyAny>> {
     match value {
         Value::Int(val) => Ok(convert_to_eval_int_result(py, val)?.into_any()),
         Value::Float(val) => Ok(convert_to_eval_float_result(py, val)?.into_any()),
@@ -174,14 +174,50 @@ pub(crate) fn convert_py_to_native(py: Python, value: Py<PyAny>) -> Value<Defaul
     }
 
     if py_any.is_instance_of::<PyTuple>() {
-        let tuple = py_any.downcast::<PyTuple>().unwrap();
-        let elements: Vec<Value<DefaultNumericTypes>> = tuple
-            .iter()
-            .map(|item| {
-                let py_obj = Py::from(item);
-                convert_py_to_native(py, py_obj)
-            })
-            .collect();
+        let tuple = py_any.cast::<PyTuple>().unwrap();
+        let len = tuple.len();
+        let mut elements = Vec::with_capacity(len);
+
+        for i in 0..len {
+            if let Ok(item) = tuple.get_item(i) {
+                // Convert directly without recursive call to avoid infinite recursion
+                if item.is_none() {
+                    elements.push(Value::Empty);
+                } else if item.is_instance_of::<PyBool>() {
+                    elements.push(Value::Boolean(item.extract::<bool>().unwrap()));
+                } else if item.is_instance_of::<PyFloat>() {
+                    elements.push(Value::Float(item.extract::<f64>().unwrap()));
+                } else if item.is_instance_of::<PyInt>() {
+                    elements.push(Value::Int(item.extract::<i64>().unwrap()));
+                } else if item.is_instance_of::<PyString>() {
+                    elements.push(Value::String(item.extract::<String>().unwrap()));
+                } else if item.is_instance_of::<PyTuple>() {
+                    // Handle nested tuples
+                    let nested_tuple = item.cast::<PyTuple>();
+                    let nested_elements: Vec<Value<DefaultNumericTypes>> = nested_tuple
+                        .iter()
+                        .map(|nested_item| {
+                            if nested_item.is_instance_of::<PyBool>() {
+                                Value::Boolean(nested_item.extract::<bool>().unwrap())
+                            } else if nested_item.is_instance_of::<PyFloat>() {
+                                Value::Float(nested_item.extract::<f64>().unwrap())
+                            } else if nested_item.is_instance_of::<PyInt>() {
+                                Value::Int(nested_item.extract::<i64>().unwrap())
+                            } else if nested_item.is_instance_of::<PyString>() {
+                                Value::String(nested_item.extract::<String>().unwrap())
+                            } else {
+                                Value::Empty
+                            }
+                        })
+                        .collect();
+                    elements.push(Value::Tuple(nested_elements));
+                } else {
+                    elements.push(Value::Empty);
+                }
+            } else {
+                elements.push(Value::Empty);
+            }
+        }
         return Value::Tuple(elements);
     }
 

@@ -14,18 +14,16 @@ mod evalexpr_natives {
     #[pymodule_init]
 
     fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
-        Python::with_gil(|_py| {
-            let mod_name = "py_evalexpr.natives";
-            m.setattr("__name__", mod_name)?;
-            let all = m.getattr("__all__")?;
-            // Bit of a hack to set the __name__ attribute of submodules, since pyo3 doesn't seem to do it correctly.
-            // Re-evaluate this if we upgrade pyo3 as they may fix this in the future.
-            for name in all.extract::<Vec<String>>()? {
-                let sub_module = m.getattr(&name)?;
-                sub_module.setattr("__name__", format!("{}.{}", mod_name, name))?;
-            }
-            Ok(())
-        })
+        let mod_name = "py_evalexpr.natives";
+        m.setattr("__name__", mod_name)?;
+        let all = m.getattr("__all__")?;
+        // Bit of a hack to set the __name__ attribute of submodules, since pyo3 doesn't seem to do it correctly.
+        // Re-evaluate this if we upgrade pyo3 as they may fix this in the future.
+        for name in all.extract::<Vec<String>>()? {
+            let sub_module = m.getattr(&name)?;
+            sub_module.setattr("__name__", format!("{}.{}", mod_name, name))?;
+        }
+        Ok(())
     }
 
     #[pymodule_export]
