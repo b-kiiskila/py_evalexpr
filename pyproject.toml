@@ -1,5 +1,5 @@
 [build-system]
-requires = ["maturin>=1.8,<2.0"]
+requires = ["maturin>=1.10,<2.0"]
 build-backend = "maturin"
 
 [project]
@@ -25,7 +25,7 @@ module-name = "py_evalexpr.natives"
 
 [dependency-groups]
 dev = [
-    "maturin>=1.8.2",
+    "maturin>=1.10.2",
     "pytest>=8.3.4",
-    "ruff>=0.9.7",
+    "ruff>=0.14.8",
 ]
