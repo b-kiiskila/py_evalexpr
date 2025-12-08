@@ -14,5 +14,5 @@ name = "py_evalexpr"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.23.3", features = ["extension-module"] }
+pyo3 = { version = "0.27.2", features = ["extension-module"] }
 evalexpr = "12.0.2"
