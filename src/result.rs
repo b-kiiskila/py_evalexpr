@@ -2,6 +2,7 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::{PyAnyMethods, PyModule};
 use pyo3::types::PyType;
 use pyo3::Bound;
+use pyo3::PyClassInitializer;
 use pyo3::{pyclass, pymethods, pymodule, Py, PyRef, PyResult, Python};
 
 #[pymodule]
@@ -75,8 +76,8 @@ pub mod result {
     #[pymethods]
     impl ExprEvalIntResult {
         #[new]
-        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
-            (ExprEvalIntResult {}, ExprEvalResult::new(value, _type))
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> PyClassInitializer<Self> {
+            PyClassInitializer::from(ExprEvalResult::new(value, _type)).add_subclass(ExprEvalIntResult {})
         }
 
         fn as_int(self_: PyRef<'_, Self>) -> PyResult<i64> {
@@ -94,8 +95,8 @@ pub mod result {
     #[pymethods]
     impl ExprEvalFloatResult {
         #[new]
-        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
-            (ExprEvalFloatResult {}, ExprEvalResult::new(value, _type))
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> PyClassInitializer<Self> {
+            PyClassInitializer::from(ExprEvalResult::new(value, _type)).add_subclass(ExprEvalFloatResult {})
         }
 
         fn as_float(self_: PyRef<'_, Self>) -> PyResult<f64> {
@@ -113,8 +114,8 @@ pub mod result {
     #[pymethods]
     impl ExprEvalBoolResult {
         #[new]
-        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
-            (ExprEvalBoolResult {}, ExprEvalResult::new(value, _type))
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> PyClassInitializer<Self> {
+            PyClassInitializer::from(ExprEvalResult::new(value, _type)).add_subclass(ExprEvalBoolResult {})
         }
 
         fn as_bool(self_: PyRef<'_, Self>) -> PyResult<bool> {
@@ -132,8 +133,8 @@ pub mod result {
     #[pymethods]
     impl ExprEvalStringResult {
         #[new]
-        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
-            (ExprEvalStringResult {}, ExprEvalResult::new(value, _type))
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> PyClassInitializer<Self> {
+            PyClassInitializer::from(ExprEvalResult::new(value, _type)).add_subclass(ExprEvalStringResult {})
         }
 
         fn as_string(self_: PyRef<'_, Self>) -> PyResult<String> {
@@ -151,8 +152,8 @@ pub mod result {
     #[pymethods]
     impl ExprEvalTupleResult {
         #[new]
-        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
-            (ExprEvalTupleResult {}, ExprEvalResult::new(value, _type))
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> PyClassInitializer<Self> {
+            PyClassInitializer::from(ExprEvalResult::new(value, _type)).add_subclass(ExprEvalTupleResult {})
         }
 
         fn as_tuple(self_: PyRef<'_, Self>) -> PyResult<Py<PyAny>> {
@@ -170,8 +171,8 @@ pub mod result {
     #[pymethods]
     impl ExprEvalNoneResult {
         #[new]
-        fn new(value: Py<PyAny>, _type: Py<PyType>) -> (Self, ExprEvalResult) {
-            (ExprEvalNoneResult {}, ExprEvalResult::new(value, _type))
+        fn new(value: Py<PyAny>, _type: Py<PyType>) -> PyClassInitializer<Self> {
+            PyClassInitializer::from(ExprEvalResult::new(value, _type)).add_subclass(ExprEvalNoneResult {})
         }
 
         fn as_none(_self_: PyRef<'_, Self>) -> PyResult<()> {
